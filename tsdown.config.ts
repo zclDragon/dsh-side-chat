@@ -1,8 +1,8 @@
 /**
- * tsdown build for dsh-sidechat: the host-half lib (lib/index.js and the
+ * tsdown build for @zhuchenglong/dsh-side-chat: the host-half lib (lib/index.js and the
  * lib/invariant.js companion, ESM node) plus the browser client bundle
  * (lib/client.js, CJS closure factory registering with the package-name id
- * `dsh-sidechat` — the client-modules compose keys on the package name).
+ * `@zhuchenglong/dsh-side-chat` — the client-modules compose keys on the package name).
  *
  * The client bundle replicates the official DSH client-bundle preset
  * (packages/client/tsdown.client.ts):
@@ -87,7 +87,7 @@ type BuildPlugin = NonNullable<UserConfig['plugins']>
 /** The shared client-bundle purity gate. */
 function purityGatePlugin(): BuildPlugin {
   return {
-    name: 'dsh-sidechat-client-purity',
+    name: '@zhuchenglong/dsh-side-chat-client-purity',
     resolveId(source: string) {
       if (NODE_BUILTINS.has(source)) {
         throw new Error(
@@ -109,7 +109,7 @@ function purityGatePlugin(): BuildPlugin {
 /** The shared CSS-inline virtual-module plugin (one <style data-plugin> per file). */
 function makeCssPlugin(pluginId: string): BuildPlugin {
   return {
-    name: 'dsh-sidechat-css-inline',
+    name: '@zhuchenglong/dsh-side-chat-css-inline',
     resolveId(source: string, importer: string | undefined) {
       if (!source.endsWith('.css')) return null
       let abs: string
@@ -170,11 +170,11 @@ function clientBundle(): UserConfig {
       },
     },
     noExternal: (id: string) => (CLIENT_EXTERNALS.includes(id) ? undefined : true),
-    plugins: [purityGatePlugin(), makeCssPlugin('dsh-sidechat')],
+    plugins: [purityGatePlugin(), makeCssPlugin('@zhuchenglong/dsh-side-chat')],
     outputOptions: {
       entryFileNames: 'client.js',
       sourcemapPathTransform: browserSourcePath,
-      banner: `window.__ModuleLoader__.load({ id: "dsh-sidechat", factory: (require) => {`,
+      banner: `window.__ModuleLoader__.load({ id: "@zhuchenglong/dsh-side-chat", factory: (require) => {`,
       footer: 'return module.exports; } });',
       intro: 'var module = { exports: {} }; var exports = module.exports;',
       codeSplitting: false,

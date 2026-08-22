@@ -2,7 +2,7 @@
  * Side-chat composer: a single textarea + send, with a stop button while the
  * side agent is running. Posts through the runtime session's `prompt` verb
  * (the same path the main composer uses).
- * @module dsh-sidechat/composer
+ * @module dsh-side-chat/composer
  */
 import { createElement, useState } from 'react'
 import type { FormEvent } from 'react'

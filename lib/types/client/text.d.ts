@@ -2,7 +2,7 @@
  * Text-extraction helpers for the compact side-chat transcript. The helpers
  * use minimal structural types (text/assistant blocks) so they stay
  * independent of any single package's re-export surface.
- * @module dsh-sidechat/text
+ * @module dsh-side-chat/text
  */
 /** A content block carrying plain text (structural subset). */
 export interface TextBlockLike {

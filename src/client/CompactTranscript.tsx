@@ -8,7 +8,7 @@
  * Scroll behavior: new content auto-scrolls to the bottom while the user is
  * near the bottom (following the conversation). When the user scrolls up to
  * read, following pauses and a "回到底部" pill appears to jump back down.
- * @module dsh-sidechat/compact-transcript
+ * @module dsh-side-chat/compact-transcript
  */
 import { createElement, useEffect, useRef, useState } from 'react'
 import { MarkdownText } from '@deepseek-ai/dsh-client-ui-primitives'

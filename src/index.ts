@@ -1,5 +1,5 @@
 /**
- * dsh-sidechat host half: Codex-style `/side` side conversations.
+ * @zhuchenglong/dsh-side-chat host half: Codex-style `/side` side conversations.
  *
  * A side chat is a fork of the parent session — same completed-turn prefix as
  * a model-visible fork, same agent preset composition — created as an ordinary
@@ -19,7 +19,7 @@
  * services; there is no new capability a malicious caller gains beyond
  * forking sessions it could already fork.
  *
- * @module dsh-sidechat
+ * @module @zhuchenglong/dsh-side-chat
  */
 
 import { randomUUID } from 'node:crypto'
@@ -39,7 +39,7 @@ import { ROUTE_PREFIX, SIDE_COMMAND } from './invariant.ts'
 export { ROUTE_PREFIX, SIDE_COMMAND, PLUGIN_ID } from './invariant.ts'
 
 /** Plugin identity for cordis.yml rows. */
-export const name = 'dsh-sidechat'
+export const name = '@zhuchenglong/dsh-side-chat'
 
 /** Services required before mounting. */
 export const inject = ['webServer', 'sessions', 'agents', 'commands', 'agentPresets']
@@ -254,7 +254,7 @@ export function apply(ctx: Context, config?: Config): void {
         | undefined
       if (workspaces !== undefined) {
         await workspaces.archiveSession(sideSessionId).catch((error: unknown) => {
-          ctx.logger.warn(`[dsh-sidechat] archive "${sideSessionId}" failed: ${String(error)}`)
+          ctx.logger.warn(`[@zhuchenglong/dsh-side-chat] archive "${sideSessionId}" failed: ${String(error)}`)
         })
       }
     }
@@ -304,13 +304,13 @@ export function apply(ctx: Context, config?: Config): void {
             return
           }
           const message = error instanceof Error ? error.message : String(error)
-          ctx.logger.warn(`[dsh-sidechat] route error: ${message}`)
+          ctx.logger.warn(`[@zhuchenglong/dsh-side-chat] route error: ${message}`)
           writeJson(res, 500, { error: message })
         }
       },
     })
     return dispose
-  }, 'dsh-sidechat: /side-chat routes')
+  }, '@zhuchenglong/dsh-side-chat: /side-chat routes')
 
   // ── /side human command ────────────────────────────────────────────────
   ctx.effect(() => {
@@ -327,5 +327,5 @@ export function apply(ctx: Context, config?: Config): void {
         }
       },
     })
-  }, 'dsh-sidechat: /side command')
+  }, '@zhuchenglong/dsh-side-chat: /side command')
 }

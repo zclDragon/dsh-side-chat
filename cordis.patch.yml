@@ -1,11 +1,11 @@
-# dsh-sidechat bundle patch
+# @zhuchenglong/dsh-side-chat bundle patch
 #
 # Mounts the plugin's host half under the id `side-chat`. The client half is
 # discovered automatically from the package's `dsh.client` manifest + the
 # `./client` export, so only the host row needs an insert here.
 #
 # Install into a profile with:
-#   dsh plugin --profile <name> add dsh-sidechat
+#   dsh plugin --profile <name> add @zhuchenglong/dsh-side-chat
 - insert:
     - id: side-chat
-      name: 'dsh-sidechat'
+      name: '@zhuchenglong/dsh-side-chat'

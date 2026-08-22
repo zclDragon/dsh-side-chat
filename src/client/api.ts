@@ -1,7 +1,7 @@
 /**
  * Thin typed client for the plugin's own /side-chat host routes. Same-origin
  * fetch (the GUI and the host webServer share one origin).
- * @module dsh-sidechat/api
+ * @module dsh-side-chat/api
  */
 
 /** One side chat as the host registry reports it. */

@@ -9,7 +9,7 @@
  * active parent is `sessions.list.current`, and each side session's live
  * conversation comes from `sessions.binding(id).session` (opened via its
  * `open()` verb so the host streams its events).
- * @module dsh-sidechat/panel
+ * @module dsh-side-chat/panel
  */
 import { createElement, useEffect, useState } from 'react'
 import { useSyncExternalStore } from 'react'

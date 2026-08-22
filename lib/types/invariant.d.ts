@@ -1,8 +1,8 @@
 /**
- * Companion invariants for dsh-sidechat. The package-level constant lives
+ * Companion invariants for dsh-side-chat. The package-level constant lives
  * here (not in index.ts) so invariant suites can import it without pulling
  * the plugin's full module graph.
- * @module dsh-sidechat/invariant
+ * @module dsh-side-chat/invariant
  */
 /** The Cordis plugin entry id used in cordis.patch.yml mount rows. */
 export declare const PLUGIN_ID = "side-chat";

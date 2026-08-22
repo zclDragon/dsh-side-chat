@@ -1,4 +1,4 @@
-# dsh-sidechat
+# @zhuchenglong/dsh-side-chat
 
 Codex 风格的 `/side` 侧边对话插件（DeepSeek Harness Web GUI）。
 
@@ -16,7 +16,7 @@ Codex 风格的 `/side` 侧边对话插件（DeepSeek Harness Web GUI）。
 ## 安装
 
 ```sh
-dsh plugin --profile web add dsh-sidechat
+dsh plugin --profile web add @zhuchenglong/dsh-side-chat
 ```
 
 重启 `dsh web`（或刷新浏览器）后生效。
