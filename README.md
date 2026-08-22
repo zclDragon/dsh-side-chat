@@ -1,5 +1,8 @@
 # @zhuchenglong/dsh-side-chat
 
+[![npm version](https://img.shields.io/npm/v/@zhuchenglong/dsh-side-chat)](https://www.npmjs.com/package/@zhuchenglong/dsh-side-chat)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Codex 风格的 `/side` 侧边对话插件（DeepSeek Harness Web GUI）。
 
 在运行中的主对话旁边打开一个**临时分叉对话**：继承主线已完成的上下文、不打断主任务、不污染主线程的模型上下文。适合"边跑边问"——在主线任务运行的同时，侧边问一句"这里为什么这么写？"、"这个报错是什么意思？"。
@@ -9,14 +12,21 @@ Codex 风格的 `/side` 侧边对话插件（DeepSeek Harness Web GUI）。
 - **`/side` 命令**：在当前会话旁开一个侧边对话（继承主线截至最后一个 `turn/end` 的完整上下文）。
 - **浮动侧边面板**：右下角「💬 侧聊」按钮开关；面板内可新建、切换、关闭侧边对话。
 - **实时问答**：侧聊会话走与主对话相同的消息通道（`session.prompt`），流式渲染、可停止。
+- **Markdown 渲染**：侧聊回复用与主对话同款的 `MarkdownText`（标题/代码块/表格/公式），流式跟随滚动。
 - **并发不中断**：侧聊 agent 与主 agent 同进程并发运行，主任务不被打断。
-- **普通持久化**：侧聊会话按普通会话持久化，`meta.parentSession` 记录归属父会话。
+- **关闭即移除**：关闭侧聊时 dispose agent 并归档会话，从面板与侧边栏一并消失。
 - **不污染主线**：`/side` 只在主线程日志里留一条命令卡片，不进入模型上下文。
 
 ## 安装
 
 ```sh
 dsh plugin --profile web add @zhuchenglong/dsh-side-chat
+```
+
+或从 GitHub 安装：
+
+```sh
+dsh plugin --profile web add github:zclDragon/dsh-side-chat#main
 ```
 
 重启 `dsh web`（或刷新浏览器）后生效。
