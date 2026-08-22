@@ -1,0 +1,15 @@
+# awesome-dsh-plugin submission entry for zclDragon/dsh-side-chat.
+#
+# Per https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/blob/main/contributing.md
+# submit a PR adding ONE file to the awesome repo:
+#   data/plugins/zclDragon__dsh-side-chat.yml
+# with this content, then run `npm ci && node scripts/generate-readme.mjs`
+# in the awesome repo to regenerate both READMEs, and commit both.
+#
+# Gate (CI-checked): the plugin repo must be >= 1 day old and have >= 10 commits.
+url: https://github.com/zclDragon/dsh-side-chat
+name: zclDragon/dsh-side-chat
+category: ui
+description:
+  en: 'Codex-style /side side conversations for DeepSeek Harness: a temporary fork of the current chat in a floating panel, inheriting context without interrupting the main task.'
+  zh: 'Codex 风格 /side 侧边对话插件：在当前对话旁开一个浮动分叉面板，继承上下文、不打断主任务。'
