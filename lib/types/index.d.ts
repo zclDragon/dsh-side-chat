@@ -42,6 +42,8 @@ export interface SideChatSummary {
     readonly createdAt: number;
     /** Whether the side agent is mid-turn right now. */
     readonly running: boolean;
+    /** Short display title derived from the side chat's first user message. */
+    readonly title: string;
 }
 /**
  * The balanced completed-turn prefix of a session's log, extended through
@@ -50,6 +52,22 @@ export interface SideChatSummary {
  * a fork would.
  */
 export declare function sideChatSeed(parent: Session): readonly import('@deepseek-ai/dsh-session').SessionEvent[] | undefined;
+/** Maximum length of a derived side-chat title (approximate, CJK-aware). */
+export declare const SIDE_CHAT_TITLE_MAX = 24;
+/**
+ * Derive a short display title for a side chat from its OWN first user
+ * message — DSH's title system deliberately skips sessions with a parent, so
+ * side chats carry no title; this is a deterministic, recomputable label.
+ *
+ * The side session's log is seeded with the parent's completed-turn prefix,
+ * so the boundary (`seedLength`) must be excluded: the title must come from
+ * the question the user actually asked IN the side chat, never an inherited
+ * parent message.
+ * @param session - the side session.
+ * @returns the truncated first-message text, or undefined when the session
+ *   has no own user message yet.
+ */
+export declare function sideChatTitleOf(session: Session): string | undefined;
 /**
  * Plugin body: installs the /side-chat routes, the durable (in-process)
  * side-chat registry, and the /side human command.
