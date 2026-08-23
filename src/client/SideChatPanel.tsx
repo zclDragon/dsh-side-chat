@@ -158,6 +158,21 @@ export function SideChatPanel({ sessions, api }: SideChatPanelProps) {
 
   const selected = selectedId === null ? undefined : sides.find(s => s.sideSessionId === selectedId)
   const running = snapshot?.running === true || selected?.running === true
+  const parentTitle = parentId === undefined
+    ? undefined
+    : (listState.byId[parentId] as { displayTitle?: string } | undefined)?.displayTitle
+
+  const closeAll = async (): Promise<void> => {
+    for (const side of sides) {
+      try {
+        await api.close(side.sideSessionId)
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : String(cause))
+      }
+    }
+    setSides([])
+    setSelectedId(null)
+  }
 
   const toggle = (): void => { setVisible(v => !v) }
 
@@ -176,8 +191,14 @@ export function SideChatPanel({ sessions, api }: SideChatPanelProps) {
       {visible && (
         <aside className={css.panel} aria-label="侧边对话面板">
           <header className={css.header}>
-            <div className={css.title}>侧边对话</div>
+            <div className={css.titleWrap}>
+              <div className={css.title}>侧边对话</div>
+              <div className={css.subtitle}>{parentTitle ?? '当前会话'} · {sides.length} 个</div>
+            </div>
             <div className={css.headerActions}>
+              <button type="button" className={css.iconButton} onClick={() => { void closeAll() }} disabled={sides.length === 0} title="关闭全部侧边对话">
+                全部关闭
+              </button>
               <button type="button" className={css.iconButton} onClick={() => { void open() }} disabled={busy || parentId === undefined} title="新建侧边对话">
                 ＋ 新建
               </button>
@@ -203,7 +224,7 @@ export function SideChatPanel({ sessions, api }: SideChatPanelProps) {
                   className={selectedId === side.sideSessionId ? css.sideChipActive : css.sideChip}
                   onClick={() => setSelectedId(side.sideSessionId)}
                 >
-                  <span>#{index + 1}</span>
+                  <span className={css.chipLabel}>{side.title.length > 0 ? side.title : `#${index + 1}`}</span>
                   <span>{side.running ? '…' : ''}</span>
                 </button>
               ))}

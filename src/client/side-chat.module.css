@@ -48,6 +48,19 @@
 .title {
   font-weight: 600;
 }
+.titleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.subtitle {
+  font-size: 11px;
+  color: #8a8a94;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .headerActions {
   display: flex;
   gap: 6px;
@@ -112,6 +125,12 @@
   background: rgba(80, 140, 255, 0.18);
   border-color: rgba(120, 170, 255, 0.55);
   color: #dbe7ff;
+}
+.chipLabel {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .conversation {

@@ -199,4 +199,45 @@ describe('SideChatPanel', () => {
     expect(closed).toBe(true)
     host.remove()
   })
+
+  it('shows parent title, side-chat title labels, and closes all', async () => {
+    const list = makeListStore({
+      current: 'session-main',
+      byId: { 'session-main': { displayTitle: 'main-project' }, 'session-side-1': {}, 'session-side-2': {} },
+    })
+    const sideSession = makeSideSession({ nodes: [], partial: null, running: false })
+    const closedIds: string[] = []
+    const api = {
+      open: vi.fn(async () => 'session-side-1'),
+      list: vi.fn(async () => [
+        { sideSessionId: 'session-side-1', parentSessionId: 'session-main', createdAt: 1, running: false, title: '第一个问题' },
+        { sideSessionId: 'session-side-2', parentSessionId: 'session-main', createdAt: 2, running: false, title: '第二个问题' },
+      ]),
+      close: vi.fn(async (id: string) => { closedIds.push(id) }),
+    }
+    const sessions: SessionsFace = {
+      list,
+      binding: () => ({ session: sideSession }),
+    }
+
+    const { host, text, click } = mountPanel(sessions, api as unknown as typeof sideChatApi)
+    click('侧聊')
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 20))
+    })
+    // Header: parent title + count.
+    expect(text()).toContain('main-project')
+    expect(text()).toContain('2 个')
+    // Side chips show derived titles.
+    expect(text()).toContain('第一个问题')
+    expect(text()).toContain('第二个问题')
+
+    click('全部关闭')
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 20))
+    })
+    expect(closedIds).toEqual(['session-side-1', 'session-side-2'])
+    expect(text()).toContain('还没有侧边对话')
+    host.remove()
+  })
 })
