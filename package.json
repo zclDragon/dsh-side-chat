@@ -1,6 +1,6 @@
 {
   "name": "@zhuchenglong/dsh-side-chat",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "DSH web plugin: Codex-style /side side conversations. Open a temporary fork of the current chat in a floating panel — ask side questions without interrupting the main task or polluting its context.",
   "keywords": [
     "dsh",
