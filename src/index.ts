@@ -294,6 +294,40 @@ export function apply(ctx: Context, config?: Config): void {
   }
 
 
+  /**
+   * Orphan cleanup: when a session is disposed, dispose every side chat
+   * (transitively) that descends from it. A parent conversation closed or
+   * removed must not leave running side agents behind.
+   */
+  ctx.effect(() => {
+    return ctx.on('session/disposed', (session: Session) => {
+      void (async () => {
+        const doomed: SessionId[] = []
+        const seen = new Set<SessionId>([session.id])
+        // Cascade through the registry: a side chat may itself be a parent.
+        for (let changed = true; changed;) {
+          changed = false
+          for (const [id, record] of registry) {
+            if (!seen.has(record.parentSessionId) || seen.has(id)) continue
+            seen.add(id)
+            doomed.push(id)
+            changed = true
+          }
+        }
+        for (const id of doomed) {
+          const record = registry.get(id)
+          registry.delete(id)
+          if (record === undefined) continue
+          try {
+            await (record.handle as { dispose: () => Promise<void> }).dispose()
+          } catch (error: unknown) {
+            ctx.logger.warn(`[@zhuchenglong/dsh-side-chat] orphan cleanup of "${id}" failed: ${String(error)}`)
+          }
+        }
+      })()
+    })
+  }, '@zhuchenglong/dsh-side-chat: orphan cleanup')
+
   // ── /side-chat routes ──────────────────────────────────────────────────
   ctx.effect(() => {
     const dispose = ctx.webServer.register({

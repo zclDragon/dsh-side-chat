@@ -66,9 +66,23 @@ function stubCtx(overrides: Record<string, unknown> = {}) {
       return undefined
     },
     effect: (fn: () => unknown) => fn(),
+    on: (event: string, listener: (session: any) => void) => {
+      listeners.push({ event, listener })
+      return () => {
+        const i = listeners.indexOf({ event, listener })
+        if (i >= 0) listeners.splice(i, 1)
+      }
+    },
     ...(overrides.ctx as Record<string, unknown> | undefined),
   }
-  return { ctx, routes, commands, created }
+  return { ctx, routes, commands, created, listeners }
+}
+
+/** Fire a captured session/disposed listener for a session id. */
+async function fireDisposed(listeners: any[], sessionId: string): Promise<void> {
+  const entry = listeners.find((l: any) => l.event === 'session/disposed')
+  if (entry === undefined) throw new Error('no session/disposed listener captured')
+  await entry.listener({ id: sessionId })
 }
 
 /** Drive the captured prefix route with a fake request/response. */
@@ -245,3 +259,39 @@ describe('sideChatTitleOf', () => {
   })
 })
 
+describe('apply — orphan cleanup', () => {
+  it('disposes side chats when the parent session is disposed', async () => {
+    const parent = completedSession([
+      event('turn/start', 0),
+      event('user/message', 1),
+      event('turn/end', 2),
+    ])
+    const { ctx, routes, created, listeners } = stubCtx({ sessions: { 'session-parent': parent } })
+    apply(ctx, { description: 'x' })
+    const open = await callRoute(routes[0], 'POST', `${ROUTE_PREFIX}/open`, { parentSessionId: 'session-parent' })
+    const sideSessionId = open.json.sideSessionId as string
+    expect(created[0].dispose).not.toHaveBeenCalled()
+
+    await fireDisposed(listeners, 'session-parent')
+
+    expect(created[0].dispose).toHaveBeenCalledTimes(1)
+    // The disposed side chat is gone from the list.
+    const list = await callRoute(routes[0], 'GET', `${ROUTE_PREFIX}/list?parentSessionId=session-parent`)
+    expect(list.json.sideChats).toHaveLength(0)
+  })
+
+  it('leaves unrelated sessions alone on disposal', async () => {
+    const parent = completedSession([
+      event('turn/start', 0),
+      event('user/message', 1),
+      event('turn/end', 2),
+    ])
+    const { ctx, routes, created, listeners } = stubCtx({ sessions: { 'session-parent': parent } })
+    apply(ctx, { description: 'x' })
+    await callRoute(routes[0], 'POST', `${ROUTE_PREFIX}/open`, { parentSessionId: 'session-parent' })
+
+    await fireDisposed(listeners, 'some-other-session')
+
+    expect(created[0].dispose).not.toHaveBeenCalled()
+  })
+})
