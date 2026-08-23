@@ -3,6 +3,8 @@
 [![npm version](https://img.shields.io/npm/v/@zhuchenglong/dsh-side-chat)](https://www.npmjs.com/package/@zhuchenglong/dsh-side-chat)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+**English:** [README_EN.md](README_EN.md)
+
 Codex 风格的 `/side` 侧边对话插件（DeepSeek Harness Web GUI）。
 
 在运行中的主对话旁边打开一个**临时分叉对话**：继承主线已完成的上下文、不打断主任务、不污染主线程的模型上下文。适合"边跑边问"——在主线任务运行的同时，侧边问一句"这里为什么这么写？"、"这个报错是什么意思？"。

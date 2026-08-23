@@ -48,7 +48,8 @@
     "lib/types/**/*.d.ts",
     "src",
     "cordis.patch.yml",
-    "README.md"
+    "README.md",
+    "README_EN.md"
   ],
   "engines": {
     "node": ">=20"
