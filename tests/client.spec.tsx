@@ -228,9 +228,13 @@ describe('SideChatPanel', () => {
     // Header: parent title + count.
     expect(text()).toContain('main-project')
     expect(text()).toContain('2 个')
-    // Side chips show derived titles.
-    expect(text()).toContain('第一个问题')
-    expect(text()).toContain('第二个问题')
+    // Side chips keep the #N labels; the derived title rides the tooltip.
+    expect(text()).toContain('#1')
+    expect(text()).toContain('#2')
+    const chips = host.querySelectorAll('button[title^="侧聊："]')
+    expect(chips).toHaveLength(2)
+    expect(chips[0]?.getAttribute('title')).toContain('第一个问题')
+    expect(chips[1]?.getAttribute('title')).toContain('第二个问题')
 
     click('全部关闭')
     await act(async () => {

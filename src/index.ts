@@ -168,17 +168,25 @@ function inheritedAgentOptions(parent: Session): { provider: string; model: stri
 export const SIDE_CHAT_TITLE_MAX = 24
 
 /**
- * Derive a short display title for a side chat from its first user message —
- * DSH's own title system deliberately skips sessions with a parent, so side
- * chats carry no title; this is a deterministic, recomputable label.
+ * Derive a short display title for a side chat from its OWN first user
+ * message — DSH's title system deliberately skips sessions with a parent, so
+ * side chats carry no title; this is a deterministic, recomputable label.
+ *
+ * The side session's log is seeded with the parent's completed-turn prefix,
+ * so the boundary (`seedLength`) must be excluded: the title must come from
+ * the question the user actually asked IN the side chat, never an inherited
+ * parent message.
  * @param session - the side session.
  * @returns the truncated first-message text, or undefined when the session
- *   has no user message yet.
+ *   has no own user message yet.
  */
 export function sideChatTitleOf(session: Session): string | undefined {
+  const boundary = session.header.seedLength ?? 0
   const first = session.events.find(
     (event): event is SessionEvent<'user/message'> =>
-      event.type === 'user/message' && event.data.source.kind === 'user',
+      event.type === 'user/message'
+      && event.data.source.kind === 'user'
+      && event.seq >= boundary,
   )
   if (first === undefined) return undefined
   const text = (first.data.content ?? [])

@@ -10,10 +10,10 @@ function event(type: string, seq: number): SessionEvent<never> {
   return { type, seq, time: seq, data: {} } as unknown as SessionEvent<never>
 }
 
-function completedSession(events: SessionEvent[]): any {
+function completedSession(events: SessionEvent[], header: Record<string, unknown> = {}): any {
   return {
     id: 'session-parent',
-    header: { cwd: '/tmp/w' },
+    header: { cwd: '/tmp/w', ...header },
     events,
     requestHeader: () => ({ config: { provider: 'deepseek', model: 'deepseek-v4-flash' } }),
   }
@@ -256,6 +256,23 @@ describe('sideChatTitleOf', () => {
     const title = sideChatTitleOf(s)
     expect(title?.endsWith('…')).toBe(true)
     expect(title?.length).toBeLessThanOrEqual(SIDE_CHAT_TITLE_MAX + 1)
+  })
+
+  it('ignores inherited parent messages before the seed boundary', () => {
+    const s = completedSession([
+      event('turn/start', 0),
+      {
+        type: 'user/message', seq: 1, time: 1,
+        data: { source: { kind: 'user' }, content: [{ type: 'text', text: '父会话的旧问题' }] },
+      } as SessionEvent<'user/message'>,
+      event('turn/end', 2),
+      event('turn/start', 3),
+      {
+        type: 'user/message', seq: 4, time: 4,
+        data: { source: { kind: 'user' }, content: [{ type: 'text', text: '侧聊自己新问的问题' }] },
+      } as SessionEvent<'user/message'>,
+    ], { seedLength: 3 })
+    expect(sideChatTitleOf(s)).toBe('侧聊自己新问的问题')
   })
 })
 

@@ -223,8 +223,9 @@ export function SideChatPanel({ sessions, api }: SideChatPanelProps) {
                   type="button"
                   className={selectedId === side.sideSessionId ? css.sideChipActive : css.sideChip}
                   onClick={() => setSelectedId(side.sideSessionId)}
+                  title={side.title.length > 0 ? `侧聊：${side.title}` : `侧聊 #${index + 1}`}
                 >
-                  <span className={css.chipLabel}>{side.title.length > 0 ? side.title : `#${index + 1}`}</span>
+                  <span>#{index + 1}</span>
                   <span>{side.running ? '…' : ''}</span>
                 </button>
               ))}
