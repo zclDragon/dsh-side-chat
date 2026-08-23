@@ -104,7 +104,7 @@ describe('SideChatPanel', () => {
 
     // After open, the host list gains the side session (as the runtime would).
     api.list.mockImplementation(async () => [
-      { sideSessionId: 'session-side-1', parentSessionId: 'session-main', createdAt: 1, running: false },
+      { sideSessionId: 'session-side-1', parentSessionId: 'session-main', createdAt: 1, running: false, title: '侧聊示例' },
     ])
     list.set({ current: 'session-main', byId: { 'session-main': {}, 'session-side-1': {} } })
     click('新建')
@@ -133,7 +133,7 @@ describe('SideChatPanel', () => {
     const api = {
       open: vi.fn(async () => 'session-side-1'),
       list: vi.fn(async () => [
-        { sideSessionId: 'session-side-1', parentSessionId: 'session-main', createdAt: 1, running: false },
+        { sideSessionId: 'session-side-1', parentSessionId: 'session-main', createdAt: 1, running: false, title: '侧聊示例' },
       ]),
       close: vi.fn(async () => {}),
     }
@@ -177,7 +177,7 @@ describe('SideChatPanel', () => {
     const api = {
       open: vi.fn(async () => 'session-side-1'),
       list: vi.fn(async () => [
-        { sideSessionId: 'session-side-1', parentSessionId: 'session-main', createdAt: 1, running: false },
+        { sideSessionId: 'session-side-1', parentSessionId: 'session-main', createdAt: 1, running: false, title: '侧聊示例' },
       ]),
       close: vi.fn(async () => { closed = true }),
     }

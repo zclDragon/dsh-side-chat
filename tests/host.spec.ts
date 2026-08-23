@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { PassThrough } from 'node:stream'
 import type { SessionEvent, SessionId } from '@deepseek-ai/dsh-session'
-import { apply, sideChatSeed } from '../src/index.ts'
+import { apply, SIDE_CHAT_TITLE_MAX, sideChatSeed, sideChatTitleOf } from '../src/index.ts'
 import { ROUTE_PREFIX, SIDE_COMMAND } from '../src/invariant.ts'
 
 /** Build a minimal fake session event. */
@@ -24,6 +24,7 @@ function stubCtx(overrides: Record<string, unknown> = {}) {
   const routes: any[] = []
   const commands: any[] = []
   const created: any[] = []
+  const listeners: any[] = []
   const ctx: any = {
     logger: { warn: vi.fn() },
     webServer: {
@@ -221,3 +222,26 @@ describe('apply — /side-chat routes and /side command', () => {
     expect(unknown.status).toBe(400)
   })
 })
+
+describe('sideChatTitleOf', () => {
+  it('returns undefined when the session has no user message', () => {
+    const s = completedSession([event('turn/start', 0)])
+    expect(sideChatTitleOf(s)).toBeUndefined()
+  })
+
+  it('derives a title from the first user message and truncates long ones', () => {
+    const long = '这是一个非常非常长的第一条消息，用来验证标题截断逻辑是否正常工作。'
+    const s = completedSession([
+      event('turn/start', 0),
+      {
+        type: 'user/message', seq: 1, time: 1,
+        data: { source: { kind: 'user' }, content: [{ type: 'text', text: long }] },
+      } as SessionEvent<'user/message'>,
+      event('turn/end', 2),
+    ])
+    const title = sideChatTitleOf(s)
+    expect(title?.endsWith('…')).toBe(true)
+    expect(title?.length).toBeLessThanOrEqual(SIDE_CHAT_TITLE_MAX + 1)
+  })
+})
+

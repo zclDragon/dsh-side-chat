@@ -27,7 +27,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import type { Agent } from '@deepseek-ai/dsh-agent'
-import type { Session, SessionId } from '@deepseek-ai/dsh-session'
+import type { Session, SessionEvent, SessionId } from '@deepseek-ai/dsh-session'
 // Type-only: pulls the Context merges for ctx.sessions / ctx.agents /
 // ctx.agentPresets / ctx.commands / ctx.webServer into this compilation.
 import type {} from '@deepseek-ai/dsh-agent-presets'
@@ -61,6 +61,8 @@ export interface SideChatSummary {
   readonly createdAt: number
   /** Whether the side agent is mid-turn right now. */
   readonly running: boolean
+  /** Short display title derived from the side chat's first user message. */
+  readonly title: string
 }
 
 /** Structured failure for the /side-chat routes. */
@@ -162,6 +164,35 @@ function inheritedAgentOptions(parent: Session): { provider: string; model: stri
   return { provider: config.provider, model: config.model }
 }
 
+/** Maximum length of a derived side-chat title (approximate, CJK-aware). */
+export const SIDE_CHAT_TITLE_MAX = 24
+
+/**
+ * Derive a short display title for a side chat from its first user message —
+ * DSH's own title system deliberately skips sessions with a parent, so side
+ * chats carry no title; this is a deterministic, recomputable label.
+ * @param session - the side session.
+ * @returns the truncated first-message text, or undefined when the session
+ *   has no user message yet.
+ */
+export function sideChatTitleOf(session: Session): string | undefined {
+  const first = session.events.find(
+    (event): event is SessionEvent<'user/message'> =>
+      event.type === 'user/message' && event.data.source.kind === 'user',
+  )
+  if (first === undefined) return undefined
+  const text = (first.data.content ?? [])
+    .filter((block): block is { type: 'text'; text: string } =>
+      typeof block === 'object' && block !== null && (block as { type?: unknown }).type === 'text')
+    .map(block => (block as { text: string }).text)
+    .join(' ')
+    .replace(/\s+/gu, ' ')
+    .trim()
+  if (text.length === 0) return undefined
+  if (text.length <= SIDE_CHAT_TITLE_MAX) return text
+  return `${text.slice(0, SIDE_CHAT_TITLE_MAX)}…`
+}
+
 /**
  * Plugin body: installs the /side-chat routes, the durable (in-process)
  * side-chat registry, and the /side human command.
@@ -220,11 +251,13 @@ export function apply(ctx: Context, config?: Config): void {
     for (const [sideSessionId, record] of registry) {
       if (record.parentSessionId !== parentSessionId) continue
       const agent = ctx.agents.get(sideSessionId)
+      const side = ctx.sessions.get(sideSessionId)
       rows.push({
         sideSessionId,
         parentSessionId,
         createdAt: record.createdAt,
         running: agent?.status === 'running',
+        title: side === undefined ? '' : (sideChatTitleOf(side) ?? ''),
       })
     }
     return rows.sort((a, b) => b.createdAt - a.createdAt)
@@ -259,6 +292,7 @@ export function apply(ctx: Context, config?: Config): void {
       }
     }
   }
+
 
   // ── /side-chat routes ──────────────────────────────────────────────────
   ctx.effect(() => {

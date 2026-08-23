@@ -10,6 +10,8 @@ export interface SideChatSummary {
   readonly parentSessionId: string
   readonly createdAt: number
   readonly running: boolean
+  /** Short display title derived from the side chat's first user message; '' when none yet. */
+  readonly title: string
 }
 
 /** Structured request failure surfaced to the panel. */
